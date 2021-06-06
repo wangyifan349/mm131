@@ -2,11 +2,14 @@
 #!/usr/bin/python3
 #encoding:utf-8
 import requests,os
-try:
-    os.mkdir("美女图片")
-except:
-    pass
-os.chdir("美女图片")
+if os.path.exists("美女图片"):
+    os.chdir("美女图片")
+else:
+    try:
+        os.mkdir("美女图片")
+        os.chdir("美女图片")
+    except:
+        print("文件夹无法创建")
 def mm131():
     headers={"User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36","Referer":"https://m.mm131.net/xinggan/"}  
     d=1

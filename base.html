@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}图片分享网站{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            transition: width 0.3s;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar .toggle-btn {
+            background-color: #444;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .sidebar .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar .menu li {
+            padding: 15px;
+            border-bottom: 1px solid #555;
+        }
+        .sidebar .menu li a {
+            color: white;
+            text-decoration: none;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            transition: margin-left 0.3s, width 0.3s;
+        }
+        .main-content.collapsed {
+            margin-left: 60px;
+            width: calc(100% - 60px);
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()">菜单</button>
+        <ul class="menu">
+            <li><a href="/">主页</a></li>
+            <li><a href="/all-images">所有图片</a></li>
+            <li><a href="#">分类1</a></li>
+            <li><a href="#">分类2</a></li>
+            <li><a href="#">分类3</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>

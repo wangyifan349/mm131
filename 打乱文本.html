@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本打乱与恢复器</title>
+    <!-- 引入Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 自定义样式，绿色主题 */
+        body {
+            background-color: #e8f5e9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #4caf50;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">文本打乱与恢复器</h1>
+        <div class="form-group">
+            <input type="text" id="key" class="form-control" placeholder="输入密钥...">
+        </div>
+        <div class="form-group">
+            <textarea id="inputText" class="form-control" rows="4" placeholder="输入文本..."></textarea>
+        </div>
+        <button class="btn btn-custom btn-block" onclick="scrambleText()">打乱文本</button>
+        <button class="btn btn-custom btn-block" onclick="unscrambleText()">恢复文本</button>
+        <button class="btn btn-custom btn-block" onclick="copyText()">复制结果</button>
+        <h2 class="text-center mt-4">结果文本</h2>
+        <div class="form-group">
+            <textarea id="outputText" class="form-control" rows="4" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        // 打乱文本的主函数
+        function scrambleText() {
+            const key = document.getElementById('key').value;
+            const inputText = document.getElementById('inputText').value;
+            const scrambledText = transformText(inputText, key, true);
+            document.getElementById('outputText').value = scrambledText;
+        }
+
+        // 恢复文本的主函数
+        function unscrambleText() {
+            const key = document.getElementById('key').value;
+            const inputText = document.getElementById('inputText').value;
+            const unscrambledText = transformText(inputText, key, false);
+            document.getElementById('outputText').value = unscrambledText;
+        }
+
+        // 复制结果文本的函数
+        function copyText() {
+            const outputText = document.getElementById('outputText');
+            outputText.select();
+            outputText.setSelectionRange(0, 99999); // 兼容移动设备
+            document.execCommand('copy');
+            alert('结果已复制到剪贴板');
+        }
+
+        // 根据密钥生成动态密码本并转换文本
+        function transformText(text, key, scramble) {
+            const passwordBook = generatePasswordBook(key);
+            const inversePasswordBook = invertPasswordBook(passwordBook);
+            let transformed = '';
+            for (let char of text) {
+                if (scramble) {
+                    transformed += passwordBook[char] || char;
+                } else {
+                    transformed += inversePasswordBook[char] || char;
+                }
+            }
+            return transformed;
+        }
+
+        // 生成密码本
+        function generatePasswordBook(key) {
+            let characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            for (let i = 0x4e00; i <= 0x9fa5; i++) {
+                characters += String.fromCharCode(i);
+            }
+
+            const shuffledCharacters = shuffleArray(characters.split(''), key);
+
+            const passwordBook = {};
+            for (let i = 0; i < characters.length; i++) {
+                passwordBook[characters[i]] = shuffledCharacters[i];
+            }
+            return passwordBook;
+        }
+
+        // 生成逆向密码本
+        function invertPasswordBook(passwordBook) {
+            const inversePasswordBook = {};
+            for (let key in passwordBook) {
+                inversePasswordBook[passwordBook[key]] = key;
+            }
+            return inversePasswordBook;
+        }
+
+        // 使用Fisher-Yates算法对字符数组进行洗牌
+        function shuffleArray(array, key) {
+            const seed = key.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            let random = seededRandom(seed);
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 生成一个基于种子的伪随机数生成器
+        function seededRandom(seed) {
+            return function() {
+                const x = Math.sin(seed++) * 10000;
+                return x - Math.floor(x);
+            };
+        }
+    </script>
+</body>
+</html>
